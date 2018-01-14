@@ -3,6 +3,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 
+# Get input from user
 testSize = float(input("Enter test size (e.g, 0.3): "))
 print(testSize)
 print()
