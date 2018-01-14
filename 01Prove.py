@@ -3,6 +3,10 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 
+testSize = float(input("Enter test size (e.g, 0.3): "))
+print(testSize)
+print()
+
 
 class HardCodedClassifier:
     """ Returns a HardCodedModel """
@@ -18,7 +22,7 @@ class HardCodedModel:
 
     """ Predicts targets """
     def predict(self, data_test):
-        predicted = np.zeros(45, dtype=np.int)
+        predicted = np.zeros(len(data_test), dtype=np.int)
         return predicted
 
 
@@ -37,7 +41,7 @@ def calcResults(actual, test):
 iris = datasets.load_iris()
 
 # Split data into training and testing sets
-data_train, data_test, targets_train, targets_test = train_test_split(iris.data, iris.target, test_size=0.3)
+data_train, data_test, targets_train, targets_test = train_test_split(iris.data, iris.target, test_size=testSize)
 
 # Create model
 classifier = GaussianNB()
