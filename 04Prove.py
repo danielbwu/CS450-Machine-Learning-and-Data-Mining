@@ -15,12 +15,17 @@ class TreeClassifier:
     def fit(self, data, targets):
         self.data = data
         self.targets = targets
+        entropies = [0, 0, 0, 0]
         for i in range(4):
-            self.calc_entropy(data.values[:, i])
+            entropies[i] = calc_entropy(data.values[:, i])
 
-    def calc_entropy(self, data):
-        _, val_freqs = np.unique(data, return_counts=True)
-        print(val_freqs)
+
+def calc_entropy(self, data):
+    entropy = 0.0
+    _, val_freqs = np.unique(data, return_counts=True)
+    print(val_freqs)
+
+    return entropy
 
 
 def main():
