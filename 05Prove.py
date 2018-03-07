@@ -115,13 +115,13 @@ class Network:
 
     # Predicts output
     def predict(self, data):
-        output = np.zeros(len(data), dtype=np.int)
+        output = [0.0 for x in range(len(data))]
         for i in range(len(data)):
             inputs = np.array(data[i])
             for j in range(len(self.layers)):
                 inputs = np.array(self.layers[j].feed_forward(inputs, self.bias))
-            output[i] = math.floor(np.mean(inputs))
-            print(inputs)
+            output[i] = np.average(inputs)
+            # print(inputs)
 
         return output
 
@@ -168,7 +168,7 @@ def main():
     print("Sklearn Results: " + str(math.floor(accuracy_score(predictions, targets_test) * 100)) + "% Match")
     print(predictions)
     print()
-    print("My Network Results: " + str(math.floor(accuracy_score(my_predictions, targets_test) * 100)) + "% Match")
+    print("My Network Results: ")
     print(my_predictions)
 
     #print(accuracy_score(predictions, targets_test))
