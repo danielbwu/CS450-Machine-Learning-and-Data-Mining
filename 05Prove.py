@@ -11,6 +11,7 @@ import math
 class Node:
     """Represents a single neuron in a network"""
     def __init__(self):
+        self.inputs = []
         self.weights = []
         self.sumWeight = 0
         self.activation = 0
@@ -22,13 +23,17 @@ class Node:
 
     """Activation function"""
     def activate(self, inputs, bias):
+        self.inputs = inputs
         self.sumWeight = sum_weights(inputs, self.weights, bias)
         self.activation = 1 / (1 + math.exp(-1 * self.sumWeight))
 
         return self.activation
 
     """Adjusts weights"""
-    #def adjust_weights(self, ):
+    def adjust_weights(self, bias, learn_rate):
+        self.weights[0] = update_weight(self.weights[0], learn_rate, self.error, bias)
+        for i in range(1, len(self.weights)):
+            self.weights[i] = update_weight(self.weights[i], learn_rate, self.error, self.inputs[i - 1])
 
 
 class Layer:
@@ -50,6 +55,11 @@ class Layer:
 
         return outputs
 
+    """Calls each Node to update its weights"""
+    def adjust_weights(self, bias, learn_rate):
+        for i in range(self.size):
+            self.nodes[i].adjust_weights(bias, learn_rate)
+
 
 class Network:
     """Represents a neural network"""
@@ -58,14 +68,16 @@ class Network:
         self.targets = targets
         self.layers = [Layer() for x in range(2)]
         self.bias = -1
-        self.learnRate = 0.05
+        self.learn_rate = 0.05
         self.init_weights()
 
+    # Initializes weights to random values
     def init_weights(self):
         self.layers[0].set_weights(len(self.data[0]) + 1)
         for i in range(1, len(self.layers)):
             self.layers[i].set_weights(self.layers[i - 1].size + 1)
 
+    # Handles feed forward and back propagation
     def train(self, inputs, data_index, layer_index):
         # Send input to activate nodes in current layer
         output = self.layers[layer_index].feed_forward(inputs, self.bias)
@@ -89,15 +101,32 @@ class Network:
                 a = self.layers[layer_index].nodes[i].activation
                 self.layers[layer_index].nodes[i].error = a * (1 - a) * (a - self.targets[data_index])
 
-        # Adjust Weights
-        for i in range(self.layers[layer_index].size):
-            self.layers[layer_index].nodes[i]
+    # Adjusts weights for each node
+    def adjust_weights(self):
+        # Loop through each layer to update Node weights
+        for i in range(len(self.layers)):
+            self.layers[i].adjust_weights(self.bias, self.learn_rate)
 
+    # Trains network
     def fit(self):
         for i in range(len(self.data)):
             self.train(self.data[i], i, 0)
+            self.adjust_weights()
+
+    # Predicts output
+    def predict(self, data):
+        output = np.zeros(len(data), dtype=np.int)
+        for i in range(len(data)):
+            inputs = np.array(data[i])
+            for j in range(len(self.layers)):
+                inputs = np.array(self.layers[j].feed_forward(inputs, self.bias))
+            output[i] = math.floor(np.mean(inputs))
+            print(inputs)
+
+        return output
 
 
+# Calculates the sum of inputs * weights
 def sum_weights(inputs, weights, bias):
     weightSum = 0.0
     weightSum += bias * weights[0]
@@ -107,10 +136,12 @@ def sum_weights(inputs, weights, bias):
     return weightSum
 
 
-def update_weight(weight, rate, output, target, input):
-    return weight - (rate * (output - target) * input)
+# Performs the weight update calculation
+def update_weight(weight, rate, error, input):
+    return weight - (rate * error * input)
 
 
+# Calculates node activation
 def activate(x):
     return 1 / (1 + math.exp(-1 * x))
 
@@ -128,6 +159,7 @@ def main():
     # Custom Network
     network = Network(data_train, targets_train)
     network.fit()
+    my_predictions = network.predict(data_test)
 
     # Print Results
     print("Actual Results: ")
@@ -135,8 +167,11 @@ def main():
     print()
     print("Sklearn Results: " + str(math.floor(accuracy_score(predictions, targets_test) * 100)) + "% Match")
     print(predictions)
+    print()
+    print("My Network Results: " + str(math.floor(accuracy_score(my_predictions, targets_test) * 100)) + "% Match")
+    print(my_predictions)
 
-    print(accuracy_score(predictions, targets_test))
+    #print(accuracy_score(predictions, targets_test))
 
 
 if __name__ == "__main__":
