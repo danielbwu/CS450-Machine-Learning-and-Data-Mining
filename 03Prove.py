@@ -156,17 +156,17 @@ def test(data, targets):
 def main():
     print("Cars: ")
     cars_data, cars_target = cars()
-    #test(cars_data.values.tolist(), cars_target.values.tolist())
+    test(cars_data.values.tolist(), cars_target.values.tolist())
     print()
     print("MPG: ")
     mpg_data, mpg_target = mpg()
 
     data_train, data_test, targets_train, targets_test = train_test_split(mpg_data.values.tolist(), mpg_target.values.tolist(), test_size=0.3)
     # Use custom classifier
-    # myClassifier = MyClassifier(nn)
-    # myModel = myClassifier.fit(data_train, targets_train)
-    # myPredictions = myModel.predict(data_test)
-    # print("My Results: " + str(calc_results(targets_test, myPredictions)) + "% Match")
+    myClassifier = MyClassifier(nn)
+    myModel = myClassifier.fit(data_train, targets_train)
+    myPredictions = myModel.predict(data_test)
+    print("My Results: " + str(calc_results(targets_test, myPredictions)) + "% Match")
     # print(myPredictions)
 
     # Sklearn regressor
@@ -174,6 +174,7 @@ def main():
     reg.fit(data_train, targets_train)
     reg_results = reg.predict(data_test)
     print("Sklearn Results: " + str(calc_results(targets_test, reg_results)) + "% Match")
+
 
 if __name__ == "__main__":
     main()
